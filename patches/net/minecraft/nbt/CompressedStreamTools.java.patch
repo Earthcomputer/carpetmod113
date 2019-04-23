@@ -1,0 +1,11 @@
+--- a/net/minecraft/nbt/CompressedStreamTools.java
++++ b/net/minecraft/nbt/CompressedStreamTools.java
+@@ -152,7 +152,7 @@
+ 
+         if (tag.getId() != 0)
+         {
+-            output.writeUTF("");
++            output.writeUTF("Schematic");
+             tag.write(output);
+         }
+     }

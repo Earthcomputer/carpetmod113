@@ -1,0 +1,36 @@
+--- a/net/minecraft/util/datafix/fixes/BlockStateFlatteningMap.java
++++ b/net/minecraft/util/datafix/fixes/BlockStateFlatteningMap.java
+@@ -1,11 +1,13 @@
+ package net.minecraft.util.datafix.fixes;
+ 
++import com.mojang.brigadier.exceptions.CommandSyntaxException;
+ import com.mojang.datafixers.DataFixUtils;
+ import com.mojang.datafixers.Dynamic;
+ import it.unimi.dsi.fastutil.objects.Object2IntMap;
+ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+ import net.minecraft.nbt.JsonToNBT;
+ import net.minecraft.nbt.NBTDynamicOps;
++import net.minecraft.nbt.NBTTagCompound;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
+@@ -13,6 +15,7 @@
+ {
+     private static final Logger LOGGER = LogManager.getLogger();
+     private static final Dynamic<?>[] ID_TO_FIXED_NBT = new Dynamic[4095];
++    public static final Object2IntMap<NBTTagCompound> FIXED_NBT_TO_ID = DataFixUtils.make(new Object2IntOpenHashMap<>(), m -> m.defaultReturnValue(-1));
+     private static final Object2IntMap < Dynamic<? >> field_199201_c = DataFixUtils.make(new Object2IntOpenHashMap<>(), (p_209420_0_) ->
+     {
+         p_209420_0_.defaultReturnValue(-1);
+@@ -25,6 +28,11 @@
+     static void addEntry(int id, String fixedNBT, String... sourceNBTs)
+     {
+         ID_TO_FIXED_NBT[id] = makeDynamic(fixedNBT);
++        try {
++            FIXED_NBT_TO_ID.put(JsonToNBT.getTagFromJson(fixedNBT.replace('\'', '"')), id);
++        } catch (CommandSyntaxException e) {
++            throw new AssertionError(e);
++        }
+ 
+         for (String s : sourceNBTs)
+         {
